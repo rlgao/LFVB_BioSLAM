@@ -1,0 +1,10 @@
+<launch>
+    <machine name="local_alt" address="localhost" default="true" />
+    
+    <!-- lidar to scan -->
+    <node name="RatSLAMLidarToScan" pkg="ratslam_ros" type="ratslam_lidar_to_scan" output="screen" />
+
+    <!-- rviz -->
+    <!-- <node name="rviz_visualisation" pkg="rviz" type="rviz" output="log" args="-d $(find ratslam_ros)/config/lidar_to_scan_rviz.rviz" /> -->
+
+</launch>

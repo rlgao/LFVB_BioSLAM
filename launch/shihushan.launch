@@ -1,0 +1,57 @@
+<launch>
+    <machine name="local_alt" address="localhost" default="true" />
+    
+    <!-- lidar to scan -->
+    <!-- <node name="RatSLAMLidarToScan" pkg="ratslam_ros" type="ratslam_lidar_to_scan" output="screen" /> -->
+
+    <!-- scan to odom -->
+    <node pkg="ratslam_ros" type="rf2o_laser_odometry_node" name="rf2o_laser_odometry" output="screen">
+        <param name="laser_scan_topic" value="/mid_scan"/>      # topic where the lidar scans are being published
+
+        <param name="odom_topic" value="/rf2o/odom" />      # topic where tu publish the odometry estimations
+        <param name="path_topic" value="/rf2o/path" />      # topic where tu publish the path estimations        
+        <param name="pose_topic" value="/rf2o/pose" />
+        <param name="publish_tf" value="true" />            # wheter or not to publish the tf::transform (base->odom)
+        <param name="base_frame_id" value="/os_sensor"/>    # frame_id (tf) of the mobile robot base. 
+                                                            # A tf transform from the laser_frame to the base_frame is mandatory
+        <param name="odom_frame_id" value="odom" />         # frame_id (tf) to publish the odometry estimations
+        <param name="init_pose_from_topic" value="" />      # (Odom topic) Leave empty to start at point (0,0)
+        <!-- <param name="freq" value="40.0"/>       # Execution frequency, not used -->
+        <param name="verbose" value="false" />   # ros_info verbose or not
+    </node>
+    
+
+    <!-- rotate image -->
+    <node name="RatSLAMRotateImage" pkg="ratslam_ros" type="ratslam_rotate_image"
+        cwd="node" required="true" output="screen" />
+
+    <!-- local view -->
+    <node name="RatSLAMLocalViewCells" pkg="ratslam_ros" type="ratslam_lv" 
+        args="$(find ratslam_ros)/config/config_shihushan.txt" cwd="node" required="true" output="screen" />
+    
+    <!-- pose cell -->
+    <node name="RatSLAMPoseCells"      pkg="ratslam_ros" type="ratslam_pc" 
+        args="$(find ratslam_ros)/config/config_shihushan.txt" cwd="node" required="true" output="screen" />
+    
+    <!-- experience map -->
+    <node name="RatSLAMExperienceMap"  pkg="ratslam_ros" type="ratslam_em" 
+        args="$(find ratslam_ros)/config/config_shihushan.txt" cwd="node" required="true" output="screen" />
+
+
+    <!-- visual odom -->
+    <!-- <node name="RatSLAMVisualOdometry" pkg="ratslam_ros" type="ratslam_vo" 
+        args="$(find ratslam_ros)/config/config_shihushan.txt" cwd="node" required="true" output="screen" /> -->
+
+
+    <!-- <node pkg="rqt_plot" type="rqt_plot" name="plot_vt_em" 
+        args="/shihushan/LocalView/Template/current_id, /shihushan/PoseCell/TopologicalAction/dest_id" /> -->
+    
+    <!-- <node pkg="rosbag" type="record" name="record" 
+        args="/shihushan/ExperienceMap/Map /shihushan/ExperienceMap/RobotPose /shihushan/LocalView/Template /shihushan/PoseCell/TopologicalAction 
+        -O $(find ratslam_ros)/outbag/shihushan_out.bag" /> -->
+
+
+    <!-- rviz -->
+    <!-- <node name="rviz_visualisation" pkg="rviz" type="rviz" output="log" args="-d $(find ratslam_ros)/config/shihushan_rviz.rviz" /> -->
+
+</launch>
